@@ -22,10 +22,10 @@ type restFollowerRepository struct {
 	client HTTPClient
 }
 
-// NewrestFollowerRepository ...
-func NewrestFollowerRepository(client HTTPClient) domain.FollowerRepository {
+// NewRestFollowerRepository describe REST Followers repository; using gtihub as data source
+func NewRestFollowerRepository(client HTTPClient) domain.FollowerRepository {
 	return &restFollowerRepository{
-		url:    "https://api.github.com/users",
+		url:    "https://api.github.com",
 		client: client,
 	}
 }
@@ -36,7 +36,7 @@ func (r *restFollowerRepository) GetByUserUsername(ctx context.Context, username
 		return ff, nil
 	}
 
-	endpoint := fmt.Sprintf("%s/%s/followers", r.url, username)
+	endpoint := fmt.Sprintf("%s/users/%s/followers", r.url, username)
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, fmt.Errorf("repository: %v", err)

@@ -32,7 +32,7 @@ func main() {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
-	f := fr.NewrestFollowerRepository(&client)
+	f := fr.NewRestFollowerRepository(&client)
 
 	uc := usecase.NewUserUsecase(u, p, f)
 	uHttpDelivery.NewUserHandler(r, uc)
