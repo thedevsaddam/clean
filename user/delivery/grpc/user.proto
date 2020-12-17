@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option go_package = "user/delivery/grpc";
+
+service UserService {
+    rpc Store (ReqCreateUser) returns (ResCreateUser);
+    rpc FetchUsers (ReqFetchUsers) returns (RespFetchUsers);
+    rpc FetchUser (ReqFetchUser) returns (RespFetchUser);
+}
+
+message ReqCreateUser {
+    uint64 id = 1; 
+    string username = 2;
+    string password = 3;
+    string type = 4;
+    Profile profile = 5;
+}
+
+message ResCreateUser {
+    uint64 id = 1; 
+    string message = 2;
+}
+
+message ReqFetchUsers {
+}
+
+message RespFetchUsers {
+    repeated User users = 1;
+    string message  =2;
+}
+
+message ReqFetchUser {
+    uint64 id = 1;
+}
+
+message RespFetchUser {
+    User user = 1 ;
+    string message = 2;
+}
+
+message User {
+    uint64 id = 1; 
+    string username = 2;
+    string type = 3;
+    Profile profile = 4;
+    repeated Follower followers = 5;
+}
+
+message Profile {
+    string name = 1;
+    int32 age = 2;
+    string bio = 3;
+}
+
+message Follower {
+    int32 id = 1;
+    string login = 2;
+}
