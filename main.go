@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,9 +11,11 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"google.golang.org/grpc"
 
 	fr "github.com/thedevsaddam/clean/follower/repository/rest"
 	pr "github.com/thedevsaddam/clean/profile/repository/inmemory"
+	ugrpcDelivery "github.com/thedevsaddam/clean/user/delivery/grpc"
 	uHttpDelivery "github.com/thedevsaddam/clean/user/delivery/http"
 	ur "github.com/thedevsaddam/clean/user/repository/inmemory"
 	"github.com/thedevsaddam/clean/user/usecase"
@@ -42,7 +45,7 @@ func main() {
 	signal.Notify(stop, os.Interrupt, os.Kill)
 
 	port := ":8000"
-	log.Println("Listening on port", port)
+	log.Println("HTTP Listening on port", port)
 	srv := &http.Server{
 		Addr:              port,
 		Handler:           r,
@@ -53,9 +56,24 @@ func main() {
 	go func() {
 		log.Fatal(srv.ListenAndServe())
 	}()
+
+	grpcSrv := grpc.NewServer()
+	ugrpcDelivery.NewUserGRPCHandler(grpcSrv, uc)
+	grpcPort := ":8001"
+	log.Println("GRPC Listening on port", grpcPort)
+	lis, err := net.Listen("tcp", grpcPort)
+	if err != nil {
+		log.Fatal(err)
+	}
+	go func() {
+		grpcSrv.Serve(lis)
+	}()
+
 	<-stop
 	log.Println("Server shutdown")
 	if err := srv.Shutdown(context.Background()); err != nil {
 		log.Fatal(err)
 	}
+	// shutdown grpc server as well
+	grpcSrv.GracefulStop()
 }
