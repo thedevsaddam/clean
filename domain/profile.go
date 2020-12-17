@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// Profile ...
+// Profile represents an user's profile
 type Profile struct {
 	ID        uint       `json:"id"`
 	UserID    uint       `json:"user_id"`
@@ -16,7 +16,7 @@ type Profile struct {
 	UpdatedAt *time.Time `json:"updated_at"`
 }
 
-// ProfileRepository represent the author's repository contract
+// ProfileRepository represent the users's repository contract
 type ProfileRepository interface {
 	Store(ctx context.Context, profile *Profile) (uint, error)
 	GetByUserID(ctx context.Context, id uint) (*Profile, error)

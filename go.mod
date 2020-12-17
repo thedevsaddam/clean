@@ -1,6 +1,6 @@
 module github.com/thedevsaddam/clean
 
-go 1.12
+go 1.15
 
 require (
 	github.com/bxcodec/faker v2.0.1+incompatible

@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
+	fr "github.com/thedevsaddam/clean/follower/repository/rest"
 	pr "github.com/thedevsaddam/clean/profile/repository/inmemory"
 	uHttpDelivery "github.com/thedevsaddam/clean/user/delivery/http"
 	ur "github.com/thedevsaddam/clean/user/repository/inmemory"
@@ -27,7 +28,13 @@ func main() {
 
 	u := ur.NewInMemoryUserRepository()
 	p := pr.NewInMemoryProfileRepository()
-	uc := usecase.NewUserUsecase(u, p)
+
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+	f := fr.NewrestFollowerRepository(&client)
+
+	uc := usecase.NewUserUsecase(u, p, f)
 	uHttpDelivery.NewUserHandler(r, uc)
 
 	// boot http server

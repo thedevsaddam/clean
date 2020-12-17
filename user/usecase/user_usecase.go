@@ -8,15 +8,17 @@ import (
 
 // userUsecase ...
 type userUsecase struct {
-	userRepository    domain.UserRepository
-	profileRepository domain.ProfileRepository
+	userRepository     domain.UserRepository
+	profileRepository  domain.ProfileRepository
+	followerRepository domain.FollowerRepository
 }
 
 // NewUserUsecase ...
-func NewUserUsecase(u domain.UserRepository, p domain.ProfileRepository) domain.UserUsecase {
+func NewUserUsecase(u domain.UserRepository, p domain.ProfileRepository, f domain.FollowerRepository) domain.UserUsecase {
 	return &userUsecase{
-		userRepository:    u,
-		profileRepository: p,
+		userRepository:     u,
+		profileRepository:  p,
+		followerRepository: f,
 	}
 }
 
@@ -45,6 +47,8 @@ func (u *userUsecase) Fetch(ctx context.Context, ctr *domain.UserCriteria) ([]*d
 	for k, v := range users {
 		p, _ := u.profileRepository.GetByUserID(ctx, v.ID)
 		users[k].Profile = p
+		f, _ := u.followerRepository.GetByUserUsername(ctx, v.Username)
+		users[k].Followers = f
 	}
 	return users, nil
 }
@@ -66,6 +70,13 @@ func (u *userUsecase) GetByID(ctx context.Context, id uint) (*domain.User, error
 	}
 
 	user.Profile = profile
+
+	f, err := u.followerRepository.GetByUserUsername(ctx, user.Username)
+	if err != nil {
+		return nil, err
+	}
+	user.Followers = f
+
 	return user, nil
 }
 

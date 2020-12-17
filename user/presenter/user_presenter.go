@@ -18,19 +18,21 @@ type UserPresenter struct{}
 
 // User ...
 type User struct {
-	ID       uint            `json:"id"`
-	Username string          `json:"username"`
-	Type     string          `json:"type"`
-	Profile  *domain.Profile `json:"profile"`
+	ID        uint               `json:"id"`
+	Username  string             `json:"username"`
+	Type      string             `json:"type"`
+	Profile   *domain.Profile    `json:"profile,omitempty"`
+	Followers []*domain.Follower `json:"followers,omitempty"`
 }
 
 //PresentUser ...
 func (*UserPresenter) PresentUser(u *domain.User) *User {
 	return &User{
-		ID:       u.ID,
-		Username: u.Username,
-		Type:     u.Type,
-		Profile:  u.Profile,
+		ID:        u.ID,
+		Username:  u.Username,
+		Type:      u.Type,
+		Profile:   u.Profile,
+		Followers: u.Followers,
 	}
 }
 
